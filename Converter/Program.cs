@@ -13,12 +13,10 @@ namespace Converter
         {
             Console.Clear();
             Console.WriteLine("The file must be encoded due to UTF8\nMust contain a valid c# code\nPut the file in the bin of this code");
-            Console.Write("Enter the name of the file:");
+            Console.Write("\nEnter the name of the file:");
             StreamReader f = new StreamReader(Console.ReadLine(), Encoding.UTF8);
             while (!f.EndOfStream)
-            {
                 file.Add(f.ReadLine());
-            }
             f.Close();
             if (file.Count > 0)
                 Console.WriteLine("File succesfully taken as input");
@@ -30,13 +28,24 @@ namespace Converter
         static List<string> ReadFromConsole(List<string> file)
         {
             Console.Clear();
-            Console.WriteLine("Paste here a working c# code. \nAt the end of it write 'STOP', or a single dot '.'");
+            Console.WriteLine("Paste here a working c# code. \nAt the end of it write 'STOP'");
             string line;
-            while((line = Console.ReadLine()) != "STOP" || line != ".")
+            while((line = Console.ReadLine()) != "STOP")
             {
                 file.Add(line);
             }
             return file;
+        }
+
+        static void RULines(List<string> file) { //Remove Unnecesary Lines 
+            string tline;
+            for (int i = 0; i < file.Count; i++)
+            {
+                tline = file[i];
+                tline = tline.Trim().Remove(' ').ToLower();
+                if(tline.StartsWith("#") || tline.Length == 0)
+                    file.RemoveAt(i);
+            }
         }
 
         static void Main()
@@ -49,8 +58,8 @@ namespace Converter
                     file = ReadFromFile(file);
                 if (val == 2)
                     file = ReadFromConsole(file);
+                RULines(file);
             }
-
         }
     }
 }
