@@ -37,14 +37,31 @@ namespace Converter
             return file;
         }
 
-        static void RULines(List<string> file) { //Remove Unnecesary Lines 
+        static void RULines(List<string> file) { //Remove Unnecesary Lines
+            bool comments = false; // true if want to remove comments
+            Console.Clear();
+            Console.WriteLine("Do you want comments in your pseudo code? (Y/n)");
+            if (Console.ReadLine().ToLower().Trim() == "y")
+                comments = true;
+            Console.WriteLine("\nRemoving comments, and unnecessary lines...");
             string tline;
-            for (int i = 0; i < file.Count; i++)
+            if (!comments)
             {
-                tline = file[i];
-                tline = tline.Trim().Remove(' ').ToLower();
-                if(tline.StartsWith("#") || tline.Length == 0)
-                    file.RemoveAt(i);
+                for (int i = file.Count - 1; i >= 0; i--) 
+                {
+                    tline = file[i].Trim().ToLower(); //trimmed line
+                    if (tline.StartsWith("#") || tline.Length == 0)
+                        file.RemoveAt(i);
+                }
+            }
+            else
+            {
+                for (int i = file.Count - 1; i >= 0; i--)
+                {
+                    tline = file[i].Trim().ToLower();
+                    if (tline.Length == 0)
+                        file.RemoveAt(i);
+                }
             }
         }
 
