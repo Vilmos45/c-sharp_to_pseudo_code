@@ -34,6 +34,10 @@ namespace Converter
             {
                 file.Add(line);
             }
+            if (file.Count > 0)
+                Console.WriteLine("Input succesfully taken");
+            else
+                Console.WriteLine("The input was empty, or an ERROR occured");
             return file;
         }
 
@@ -43,19 +47,20 @@ namespace Converter
             Console.WriteLine("Do you want comments in your pseudo code? (Y/n)");
             if (Console.ReadLine().ToLower().Trim() == "y")
                 comments = true;
-            Console.WriteLine("\nRemoving comments, and unnecessary lines...");
             string tline;
             if (!comments)
             {
+                Console.WriteLine("\nRemoving comments, and unnecessary lines...");
                 for (int i = file.Count - 1; i >= 0; i--) 
                 {
-                    tline = file[i].Trim().ToLower(); //trimmed line
+                    tline = file[i].Trim().ToLower();
                     if (tline.StartsWith("#") || tline.Length == 0)
                         file.RemoveAt(i);
                 }
             }
             else
             {
+                Console.WriteLine("\nRemoving unnecessary lines...");
                 for (int i = file.Count - 1; i >= 0; i--)
                 {
                     tline = file[i].Trim().ToLower();
@@ -63,6 +68,22 @@ namespace Converter
                         file.RemoveAt(i);
                 }
             }
+            Console.WriteLine("Removing succesfully done");
+        }
+
+        static void WriteToFile(List<string> pseudo)
+        {
+            Console.WriteLine();
+            StreamWriter writer = new StreamWriter("output.txt");
+            foreach (var item in pseudo)
+            {
+                writer.WriteLine(pseudo);
+            }
+        }
+
+        static void WriteToConsole()
+        {
+
         }
 
         static void Main()
@@ -75,8 +96,13 @@ namespace Converter
                     file = ReadFromFile(file);
                 if (val == 2)
                     file = ReadFromConsole(file);
+                Console.ReadKey();
                 RULines(file);
+                Console.ReadKey();
+
+
             }
+            Console.ReadKey();
         }
     }
 }
