@@ -8,7 +8,7 @@ namespace Converter
     internal class Program
     {
         #region Dictionary
-        /*static readonly Dictionary<string, string> eng = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> eng = new Dictionary<string, string>()
         {
             { "if", "IF" },
             { "else", "ELSE" },
@@ -16,29 +16,76 @@ namespace Converter
             { "for", "FOR" },
             { "true", "TRUE" },
             { "false", "FALSE" },
-        };*/
+        };
 
-        static readonly Dictionary<string, string> hun = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> hun = new Dictionary<string, string>()
+        {
+            // Metódusok
+            { "static void", "Eljárás" },
+            { "void", "Eljárás" },
+            { "static", "" },
+
+            // Típusok
+            { "int", "Egész:" },
+            { "bool", "Logikai:" },
+            { "string", "Szöveg:" },
+            { "List<", "Lista<" },
+
+            // Logikai literalok
+            { "true", "Igaz" },
+            { "false", "Hamis" },
+
+            // Kontroll szerkezetek
+            { "if", "Ha" },
+            { "else", "Különben" },
+            { "while", "Amíg" },
+            { "for", "Ciklus" },
+            { "foreach", "Ciklus minden elemre" },
+
+            // Operátorok
+            { "==", "=" },
+            { "!=", "≠" },
+            { "=", ":=" },
+            { "=>", "->" },
+
+            // Gyakoribb metódus-hívások C#-ból → pszeudokód
+            { ".Add(", ".Hozzáad(" },
+            { ".Remove(", ".Töröl(" },
+            { ".RemoveAt(", ".TörölIndexnél(" },
+            { ".Replace(", ".Helyettesít(" },
+            { ".Contains(", ".Tartalmaz(" },
+            { ".Count", ".Hossz" },
+            { ".Length", ".Hossz" },
+            { ".Sort(", ".Rendez(" },
+            { ".ToString(", ".Szöveggé(" },
+            //.TRIM, cw
+
+            // Egyéb gyakori C# elemek
+            { "return", "Visszaad: " },
+            { "new ", "Új " },
+            { "break", "Törés" },
+
+            // Blokkok
+            { "{", "" },
+            { "}", "Vége" },
+        };
+
+
+        private static readonly Dictionary<string, string> hunif = new Dictionary<string, string>()
         {
             { "if", "Ha" },//ifelses
             { "else", "Különben" },
             { "while", "Amíg" },//loop
+            { "foreach", "Ciklus minden lemere" },
             { "for", "Ciklus" },
-            { "true", "Igaz" },//logic
-            { "false", "Hamis" },
-            { "=", ":=" },
-            { "!=", "≠" },
-            { "==", "=" },
-            { "int", "Egész" },//variables
-            { "bool", "Logikai" },
             { "static void", "Eljárás" },
-            
+            { "static", "Függvény" }
         };
 
         #endregion
 
         #region Read
-        static int Read()
+        private static int Read()
         {
             Console.WriteLine("1: Read from file\n2: Read form console\nq: exit");
             string inp = Console.ReadLine();
@@ -52,7 +99,7 @@ namespace Converter
             return val;
         }
 
-        static List<string> ReadFromFile(List<string> file)
+        private static List<string> ReadFromFile(List<string> file)
         {
             Console.Clear();
             Console.WriteLine("The file must be encoded due to UTF8\nMust contain a valid c# code\nPut the file in the 'Pseudocode' folder");
@@ -68,7 +115,7 @@ namespace Converter
             return file;
         }
 
-        static List<string> ReadFromConsole(List<string> file)
+        private static List<string> ReadFromConsole(List<string> file)
         {
             Console.Clear();
             Console.WriteLine("Paste here a working c# code\nAt the end of it write 'STOP'");
@@ -86,7 +133,7 @@ namespace Converter
         #endregion
 
         #region Processing
-        static void RULines(List<string> file)
+        private static void RULines(List<string> file)
         { //Remove Unnecesary and Unused Lines
             bool comments = false; // true if want to remove comments
             Console.Clear();
@@ -129,19 +176,59 @@ namespace Converter
             Console.WriteLine("Removing succesfully done");
         }
 
-        static List<string> Convert(List<string> file)
+        private static List<string> Convert(List<string> file, int e = 0)
         {
+            Console.Clear();
+            Console.WriteLine("Wich language do you want your pseudo code to be translated?");
+            Console.Write("hun/eng: ");
             List<string> code = new List<string>(file.Count);
-            for (int i = 0; i < file.Count; i++)
+            string row;
+            if (Console.ReadLine().Trim().ToLower() == "eng")
             {
+                Console.WriteLine("Converting to english\nStarted to convert...");
+                for (int i = e; i < file.Count; i++)
+                {
+                    row = file[i].Trim();
+                    foreach (var item in hunif)
+                    {
+                        if (!row.Contains(item.Key))
+                        {
+                            foreach (var itm in hun)
+                                file[i] = file[i].Replace(itm.Key, itm.Value);
+                            break;
+                        }
+                    }
+                    code.Add(file[i]);
 
+                }
             }
-            return file;
+            else
+            {
+                Console.WriteLine("Converting to hungarian\nStarted to convert...");
+                for (int i = e; i < file.Count; i++)
+                {
+                    row = file[i].Trim();
+
+                    foreach (var item in hunif)
+                    {
+                        if (!row.Contains(item.Key))
+                        {
+                            foreach (var itm in hun)
+                                file[i] = file[i].Replace(itm.Key, itm.Value);
+                            break;
+                        }
+                    }
+                    code.Add(file[i]);
+                }
+            }
+            Console.WriteLine("Converting succesfully done");
+            return code;
         }
+
         #endregion
 
         #region Write
-        static int Write()
+        private static int Write()
         {
             Console.Clear();
             Console.WriteLine("1: Write to file\n2: Write to console");
@@ -156,11 +243,11 @@ namespace Converter
             return val;
         }
 
-        static void WriteToFile(List<string> pseudo)
+        private static void WriteToFile(List<string> pseudo, string path = "../../Pseudocode/output.txt")
         {
             Console.Clear();
-            Console.WriteLine("The file with the pseudo code will be in the pseudocode folder");
-            StreamWriter writer = new StreamWriter("../../Pseudocode/output.txt");
+            Console.WriteLine("The file with the pseudo code will be in the pseudocode folder\nTo the following path: " + path + "\n\n");
+            StreamWriter writer = new StreamWriter(path);
             foreach (var item in pseudo)
             {
                 writer.WriteLine(pseudo);
@@ -168,17 +255,16 @@ namespace Converter
             writer.Close();
         }
 
-        static void WriteToConsole(List<string> pseudo)
+        private static void WriteToConsole(List<string> pseudo)
         {
             Console.Clear();
+            Console.WriteLine("Your code in pseudo code:\n\n");
             foreach (var item in pseudo)
-            {
                 Console.WriteLine(item);
-            }
         }
         #endregion
 
-        static void Main()
+        private static void Main()
         {
             List<string> file = new List<string>(4);
             int val = Read();
@@ -190,6 +276,9 @@ namespace Converter
             Console.ReadKey();
 
             RULines(file);
+            Console.ReadKey();
+
+            file = Convert(file);
             Console.ReadKey();
 
             val = Write();
@@ -206,19 +295,3 @@ namespace Converter
         }
     }
 }
-
-/** /
-Alma
-//körte
-if()
-lol
-//lol
-lol
-
-stop
-   éldfkgj ; 
-lksdafjg nlkjdfn odfishgofd hg jkdf hjkdk lg dsfkh gkljdfh gjkf hkj dkjfg hu8i93475 896 iuwreéergßĐ[l];í$dsfofhg hg dfh ;
-"oiuh"-
-
-
-/**/
