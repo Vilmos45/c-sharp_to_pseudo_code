@@ -8,7 +8,7 @@ namespace Converter
     internal class Program
     {
         #region Dictionary
-        /*static readonly Dictionary<string, string> English = new Dictionary<string, string>()
+        /*static readonly Dictionary<string, string> eng = new Dictionary<string, string>()
         {
             { "if", "IF" },
             { "else", "ELSE" },
@@ -18,15 +18,21 @@ namespace Converter
             { "false", "FALSE" },
         };*/
 
-        static readonly Dictionary<string, string> Hungarian = new Dictionary<string, string>()
+        static readonly Dictionary<string, string> hun = new Dictionary<string, string>()
         {
-            { "if", "Ha" },
+            { "if", "Ha" },//ifelses
             { "else", "Különben" },
-            { "while", "Amíg" },
-            { "for", "Ciklus" },//loop
-            { "true", "Igaz" },
-            { "false", "Hamis" },//logic
-            { "int", "Egész" }//variables
+            { "while", "Amíg" },//loop
+            { "for", "Ciklus" },
+            { "true", "Igaz" },//logic
+            { "false", "Hamis" },
+            { "=", ":=" },
+            { "!=", "≠" },
+            { "==", "=" },
+            { "int", "Egész" },//variables
+            { "bool", "Logikai" },
+            { "static void", "Eljárás" },
+            
         };
 
         #endregion
