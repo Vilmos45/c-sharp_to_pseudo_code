@@ -282,7 +282,7 @@ namespace Converter
             Console.ReadKey();
 
             val = Write();
-            if (val == -1) return;
+            if (val == -1) return; // Enviroment.exit(0);
             if (val == 1)
                 WriteToFile(file);
             else if (val == 2)
