@@ -69,35 +69,26 @@ namespace Converter
             { "{", "" },
             { "}", "Vége" },
         };
-
-
-        private static readonly Dictionary<string, string> hunif = new Dictionary<string, string>()
-        {
-            { "if", "Ha" },//ifelses
-            { "else", "Különben" },
-            { "while", "Amíg" },//loop
-            { "foreach", "Ciklus minden lemere" },
-            { "for", "Ciklus" },
-            { "static void", "Eljárás" },
-            { "static", "Függvény" }
-        };
-
         #endregion
 
         #region Read
-        private static int Read()
+        private static int ReadOptions()
         {
-            Console.WriteLine("1: Read from file\n2: Read form console\nq: exit");
-            string inp = Console.ReadLine();
-            int val;
-            if (!int.TryParse(inp, out val) || val > 2 || val < 1)
-            {
-                Console.WriteLine("Invalid command!");
-                Console.ReadKey();
+            Console.Clear();
+            Console.WriteLine("1: Read from file\n2: Read from console\nq: exit");
+
+            string inp = Console.ReadLine().Trim().ToLower();
+
+            if (inp == "q")
                 return -1;
-            }
-            return val;
+
+            if (int.TryParse(inp, out int val) && (val < 3 && -2 < val))
+                return val;
+
+            Console.WriteLine("Invalid command!");
+            return 0;
         }
+
 
         private static List<string> ReadFromFile(List<string> file)
         {
@@ -118,7 +109,7 @@ namespace Converter
         private static List<string> ReadFromConsole(List<string> file)
         {
             Console.Clear();
-            Console.WriteLine("Paste here a working c# code\nAt the end of it write 'STOP'");
+            Console.WriteLine("Paste here a working c# code\nAt the end of it write 'STOP':\n");
             string line;
             while ((line = Console.ReadLine()) != "STOP")
             {
@@ -133,13 +124,15 @@ namespace Converter
         #endregion
 
         #region Processing
-        private static void RULines(List<string> file)
+        private static void RULines(List<string> file, bool comments = false)
         { //Remove Unnecesary and Unused Lines
-            bool comments = false; // true if want to remove comments
             Console.Clear();
-            Console.WriteLine("Do you want comments in your pseudo code? (Y/n)\n");
-            if (Console.ReadLine().ToLower().Trim() == "y")
-                comments = true;
+            if (!comments)
+            {
+                Console.WriteLine("Do you want comments in your pseudo code? (Y/n):");
+                if (Console.ReadLine().ToLower().Trim() == "y")
+                    comments = true;
+            }
             string tline;
             if (!comments)
             {
@@ -170,80 +163,63 @@ namespace Converter
                 tline = file[i].Trim();
                 if (tline.Length == 0)
                     file.RemoveAt(i);
-                else
-                    file[i] = file[i].Replace(";", "");
             }
             Console.WriteLine("Removing succesfully done");
         }
 
         private static List<string> Convert(List<string> file, int e = 0)
         {
+            RULines(file);
             Console.Clear();
-            Console.WriteLine("Wich language do you want your pseudo code to be translated?");
+            Console.WriteLine("Which language do you want your pseudo code to be translated?");
             Console.Write("hun/eng: ");
+            string mode = Console.ReadLine().Trim().ToLower();
+            Dictionary<string, string> table;
             List<string> code = new List<string>(file.Count);
-            string row;
-            if (Console.ReadLine().Trim().ToLower() == "eng")
-            {
-                Console.WriteLine("Converting to english\nStarted to convert...");
-                for (int i = e; i < file.Count; i++)
-                {
-                    row = file[i].Trim();
-                    foreach (var item in hunif)
-                    {
-                        if (!row.Contains(item.Key))
-                        {
-                            foreach (var itm in hun)
-                                file[i] = file[i].Replace(itm.Key, itm.Value);
-                            break;
-                        }
-                    }
-                    code.Add(file[i]);
 
-                }
+            if (mode == "eng")
+            {
+                Console.WriteLine("Converting to English...");
+                table = eng;
             }
             else
             {
-                Console.WriteLine("Converting to hungarian\nStarted to convert...");
-                for (int i = e; i < file.Count; i++)
-                {
-                    row = file[i].Trim();
-
-                    foreach (var item in hunif)
-                    {
-                        if (!row.Contains(item.Key))
-                        {
-                            foreach (var itm in hun)
-                                file[i] = file[i].Replace(itm.Key, itm.Value);
-                            break;
-                        }
-                    }
-                    code.Add(file[i]);
-                }
+                Console.WriteLine("Converting to Hungarian...");
+                table = hun;
             }
-            Console.WriteLine("Converting succesfully done");
+            for (int i = e; i < file.Count; i++)
+            {
+                string line = file[i];
+                foreach (var itm in table)
+                    line = line.Replace(itm.Key, itm.Value);
+
+                code.Add(line);
+            }
+            Console.WriteLine("Conversion done.");
+            Console.ReadKey();
+            RULines(code, false);
             return code;
         }
+
 
         #endregion
 
         #region Write
-        private static int Write()
+        private static int WriteOptions()
         {
             Console.Clear();
-            Console.WriteLine("1: Write to file\n2: Write to console");
-            string inp = Console.ReadLine();
-            int val;
-            if (!int.TryParse(inp, out val) || val > 2 || val < 1)
-            {
-                Console.WriteLine("Invalid command!");
-                Console.ReadKey();
+            Console.WriteLine("1: Write to file\n2: Write to console\nq: exit");
+            string inp = Console.ReadLine().Trim().ToLower();
+            if (inp == "q")
                 return -1;
-            }
-            return val;
+            if (int.TryParse(inp, out int val) && (val < 3 && -2 < val))
+                return val;
+
+            Console.WriteLine("Invalid command!");
+            return 0;
         }
 
-        private static void WriteToFile(List<string> pseudo, string path = "../../Pseudocode/output.txt")
+        private static void WriteToFile(List<string> pseudo, string path = "../../output.txt")
         {
             Console.Clear();
             Console.WriteLine("The file with the pseudo code will be in the pseudocode folder\nTo the following path: " + path + "\n\n");
@@ -257,37 +233,57 @@ namespace Converter
 
         private static void WriteToConsole(List<string> pseudo)
         {
+            Console.WriteLine();
             Console.Clear();
-            Console.WriteLine("Your code in pseudo code:\n\n");
-            foreach (var item in pseudo)
+            Console.WriteLine($"Your new code is {pseudo.Count} lines\nYour code in pseudo code:\n\n");
+            foreach (string item in pseudo)
+            {
                 Console.WriteLine(item);
+            }
         }
         #endregion
 
+        static List<string> Read(List<string> file)
+        {
+            int val;
+            do
+            {
+                val = ReadOptions();
+                if (val == -1)
+                    Environment.Exit(0);
+                if (val == 1)
+                    return ReadFromFile(file);
+                if (val == 2)
+                    return ReadFromConsole(file);
+                Console.ReadKey();
+            } while (val == 0);
+            return file;
+        }
+
+        static void Write(List<string> file)
+        {
+            int val;
+            do
+            {
+                val = WriteOptions();
+                if (val == -1)
+                    Environment.Exit(0);
+                Console.ReadKey();
+                if (val == 1)
+                    WriteToFile(file);
+                else if (val == 2)
+                    WriteToConsole(file);
+            } while (val == 0);
+            Console.ReadKey();
+        }
+
         private static void Main()
         {
-            List<string> file = new List<string>(4);
-            int val = Read();
-            if (val == -1) return;
-            if (val == 1)
-                file = ReadFromFile(file);
-            else if (val == 2)
-                file = ReadFromConsole(file);
-            Console.ReadKey();
+            List<string> file = new List<string>();
 
-            RULines(file);
-            Console.ReadKey();
-
+            file = Read(file);
             file = Convert(file);
-            Console.ReadKey();
-
-            val = Write();
-            if (val == -1) return;
-            if (val == 1)
-                WriteToFile(file);
-            else if (val == 2)
-                WriteToConsole(file);
-            Console.ReadKey();
+            Write(file);
 
             Console.Clear();
             Console.WriteLine("Thank you for using this program.\nCredits: Vilmos45");
