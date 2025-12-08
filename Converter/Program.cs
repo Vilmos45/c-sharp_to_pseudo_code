@@ -156,6 +156,7 @@ namespace Converter
                     }
                 }
             }
+
             Console.WriteLine("Removing unnecessary lines...");
             for (int i = file.Count - 1; i >= 0; i--)
             {
